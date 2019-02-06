@@ -26,7 +26,7 @@ export default class RoundedButton extends Component {
     }
 }
 
-RoundedButton.PropTypes = {
+RoundedButton.propTypes = {
     taxt: PropTypes.string.isRequired,
     textColor: PropTypes.string,
     background: PropTypes.string,

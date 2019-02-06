@@ -12,17 +12,32 @@ import {
 import colors from '../styles/colors';
 import InputField from '../components/from/InputField';
 import NextArrowButton from '../components/buttons/NextArrowButton';
+import Notification from '../components/Notification';
 
 export default class Login extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            formValid: false,
+        }
+        this.handleCloseNotification = this.handleCloseNotification.bind(this);
+    }
     handleNextButton() {
         alert('Next Button Pressed');
     }
+    handleCloseNotification() {
+        this.setState({ formValid: true });
+    }
+
     render() {
+        const { formValid } = this.state;
+        const showNotification = formValid ? false : true;
+        const background = formValid ? colors.green01 : colors.darkOrange
         return (
             <KeyboardAvoidingView
-                style={styles.wrapper}
+                style={[{ backgroundColor: background }, styles.wrapper]}
             >
-                <View style={styles.scrollviewWrapper}  behavior="padding">
+                <View style={styles.scrollviewWrapper} behavior="padding">
                     <ScrollView style={styles.scrollView}>
                         <Text style={styles.loginHeader}>Log In</Text>
                         <InputField
@@ -49,6 +64,15 @@ export default class Login extends Component {
                             handleNextButton={this.handleNextButton}
                         />
                     </View>
+                    <View>
+                        <Notification
+                            showNotification={showNotification}
+                            handleCloseNotification={this.handleCloseNotification}
+                            type="Error"
+                            firstLine="Those credentials don't look right."
+                            secondLine="Please try again."
+                        />
+                    </View>
                 </View>
             </KeyboardAvoidingView>
         );
@@ -59,7 +83,6 @@ const styles = StyleSheet.create({
     wrapper: {
         display: 'flex',
         flex: 1,
-        backgroundColor: colors.green01,
     },
     scrollviewWrapper: {
         marginTop: 70,

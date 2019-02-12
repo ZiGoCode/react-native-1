@@ -13,6 +13,7 @@ import colors from '../styles/colors';
 import InputField from '../components/from/InputField';
 import NextArrowButton from '../components/buttons/NextArrowButton';
 import Notification from '../components/Notification';
+import Loader from '../components/Loader';
 
 export default class Login extends Component {
     constructor(props) {
@@ -22,6 +23,7 @@ export default class Login extends Component {
             validEmail: false,
             emailAddress: '',
             validPassword: false,
+            loadingVisible: false,
         }
         this.handleCloseNotification = this.handleCloseNotification.bind(this);
         this.handleEmailChand = this.handleEmailChand.bind(this);
@@ -31,12 +33,16 @@ export default class Login extends Component {
     }
 
     handleNextButton() {
-        if (this.state.emailAddress === 'hello@imandy.ie' && this.state.validPassword) {
-            this.setState({ formValid: true });
-            alert('success')
-        } else {
-            this.setState({ formValid: false });
-        }
+        this.setState({ loadingVisible: true });
+        setTimeout(() => {
+            if (this.state.emailAddress === 'hello@imandy.ie' && this.state.validPassword) {
+                this.setState({ formValid: true, loadingVisible: false }, () => {
+                    alert('success');
+                });
+            } else {
+                this.setState({ formValid: false, loadingVisible: false });
+            }
+        }, 2000);
     }
 
     handleCloseNotification() {
@@ -76,7 +82,7 @@ export default class Login extends Component {
     }
 
     render() {
-        const { formValid } = this.state;
+        const { formValid, loadingVisible } = this.state;
         const showNotification = formValid ? false : true;
         const background = formValid ? colors.green01 : colors.darkOrange;
         const notificationMarginTop = showNotification ? 10 : 0;
@@ -124,6 +130,10 @@ export default class Login extends Component {
                         />
                     </View>
                 </View>
+                <Loader
+                    modalVisible={loadingVisible}
+                    animationType="fale"
+                />
             </KeyboardAvoidingView>
         );
     }

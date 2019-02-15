@@ -9,19 +9,24 @@ import {
     KeyboardAvoidingView,
 
 } from 'react-native';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import { ActionCreators } from '../redux/actions';
+
 import colors from '../styles/colors';
 import InputField from '../components/from/InputField';
 import NextArrowButton from '../components/buttons/NextArrowButton';
 import Notification from '../components/Notification';
 import Loader from '../components/Loader';
 
-export default class Login extends Component {
+class LogIn extends Component {
     constructor(props) {
         super(props);
         this.state = {
             formValid: true,
             validEmail: false,
             emailAddress: '',
+            password: '',
             validPassword: false,
             loadingVisible: false,
         }
@@ -35,13 +40,19 @@ export default class Login extends Component {
     handleNextButton() {
         this.setState({ loadingVisible: true });
         setTimeout(() => {
-            if (this.state.emailAddress === 'hello@imandy.ie' && this.state.validPassword) {
-                this.setState({ formValid: true, loadingVisible: false }, () => {
-                    alert('success');
-                });
+            const { emailAddress, password } = this.state;
+            if (this.props.logIn(emailAddress, password)) {
+                this.setState({ formValid: true, loadingVisible: false });
             } else {
                 this.setState({ formValid: false, loadingVisible: false });
             }
+            // if (this.state.emailAddress === 'hello@imandy.ie' && this.state.validPassword) {
+            //     this.setState({ formValid: true, loadingVisible: false }, () => {
+            //         alert('success');
+            //     });
+            // } else {
+            //     this.setState({ formValid: false, loadingVisible: false });
+            // }
         }, 2000);
     }
 
@@ -59,11 +70,13 @@ export default class Login extends Component {
             }
         } else {
             if (!emailCheckRegex.test(email)) {
-                this.setState({ validEmail: false })
+                this.setState({ validEmail: false });
             }
         }
     }
     handlePasswordChange(password) {
+        this.setState({ password });
+
         if (!this.state.validPassword) {
             if (password.length > 4) {
                 this.setState({ validPassword: true });
@@ -118,12 +131,10 @@ export default class Login extends Component {
                             showCheckmark={validPassword}
                         />
                     </ScrollView>
-                    <View style={styles.nextButton}>
-                        <NextArrowButton
-                            handleNextButton={this.handleNextButton}
-                            disabled={this.toggleNextButtonState()}
-                        />
-                    </View>
+                    <NextArrowButton
+                        handleNextButton={this.handleNextButton}
+                        disabled={this.toggleNextButtonState()}
+                    />
                     <View style={[styles.notificationWrapper, { marginTop: notificationMarginTop }]}>
                         <Notification
                             showNotification={showNotification}
@@ -164,14 +175,20 @@ const styles = StyleSheet.create({
         fontWeight: '300',
         marginBottom: 40,
     },
-    nextButton: {
-        alignItems: 'flex-end',
-        right: 20,
-        bottom: 20,
-    },
     notificationWrapper: {
         position: 'absolute',
         bottom: 0,
         width: '100%',
     },
-})
+});
+
+const mapStateToProps = (state) => {
+    return {
+        loggedInStatus: state.loggedInStatus,
+    }
+};
+const mapDispatchToProps = (dispatch) => {
+    return bindActionCreators(ActionCreators, dispatch);
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(LogIn);
